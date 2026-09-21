@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: liveherehomes
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: liveherehomes
+    ports:
+      - '5432:5432'
+    volumes:
+      - liveherehomes_pgdata:/var/lib/postgresql/data
+
+volumes:
+  liveherehomes_pgdata:
