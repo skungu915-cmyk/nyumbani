@@ -119,6 +119,51 @@ further staff accounts via `POST /api/admin/users`.
 The admin portal's "M-Pesa Status" page shows whether credentials are configured — it never reads
 or displays the actual secret values, which live only in the server's environment.
 
+## Netlify demo deployment
+
+A live demo runs at **https://liveherehomes.netlify.app** (frontend + backend + database, all on
+Netlify). This is an *optional* alternative to the primary Node/Express + PostgreSQL setup above —
+useful for quickly showing the app running without provisioning your own server, at the cost of a
+couple of features (see limitations below).
+
+**How it's wired up** (see `netlify.toml`, `netlify/functions/api.js`,
+`netlify/database/migrations/`):
+- The existing Express app runs unchanged inside a single Netlify Function
+  (`serverless-http`) — `/api/*` and `/media/*` are redirected to it, and `frontend/` is published
+  as the static site on the same origin, so there's no separate CORS setup to manage.
+- The database is a Netlify DB (Neon-backed Postgres), auto-provisioned because `@netlify/database`
+  is a dependency. The function reads its connection string via `getConnectionString()` at cold
+  start and hands it to Prisma as `DATABASE_URL` — no connection string is ever stored as a plain
+  environment variable.
+- Schema + demo data are applied via Netlify's own native SQL migration runner
+  (`netlify/database/migrations/<timestamp>_<slug>/migration.sql`), which Netlify runs
+  automatically before every deploy is published. This mirrors `backend/prisma/migrations/` (the
+  source of truth for local/production Postgres) plus a hand-written seed migration equivalent to
+  running `SEED_DEMO_DATA=true node prisma/seed.js` — since this deployment has no shared
+  filesystem to actually run that script against.
+
+**Demo accounts** (same three roles as the local `SEED_DEMO_DATA=true` seed):
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@example.com` | `AdminDemo123!` |
+| Landlord | `demo.landlord@example.com` | `DemoPass123!` |
+| Tenant | `demo.tenant@example.com` | `DemoPass123!` |
+
+**Known limitations of this deployment path only** (the primary Node/Express deployment above
+doesn't have these):
+- Serverless functions have an ephemeral filesystem, so uploaded property photos don't persist
+  between invocations — listings without a photo already fall back to a placeholder image, so
+  this doesn't break anything, it just means newly-uploaded photos won't stick around.
+  M-Pesa STK Push still needs real Safaricom Daraja credentials set as env vars; without them,
+  clicking "Pay & Unlock" fails with a clean error, same as any deployment that hasn't configured
+  M-Pesa yet.
+- If you fork/redeploy this to your own Netlify site, set the same env vars documented in
+  `backend/.env.example` (`JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `NODE_ENV=production`,
+  `COOKIE_SECURE=true`, `FRONTEND_ORIGINS`/`BACKEND_PUBLIC_URL` set to your site's URL,
+  `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PHONE`/`SEED_ADMIN_PASSWORD`) via Site settings → Environment
+  variables — `DATABASE_URL` is the one exception, handled automatically as described above.
+
 ## Deployment notes
 
 - Set `NODE_ENV=production`, `COOKIE_SECURE=true`, and real (32+ byte) `JWT_*_SECRET` values —
