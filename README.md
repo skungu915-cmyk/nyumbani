@@ -46,6 +46,32 @@ npm run dev    # starts on http://localhost:4000 (or `npm start` for production)
 npm test       # runs the unit test suite (node:test, no DB required)
 ```
 
+### Try it with demo data (recommended the first time)
+
+Re-run the seed with `SEED_DEMO_DATA=true` to also create a demo landlord, a demo tenant, and
+three demo properties (two live, one `PENDING_REVIEW` so you can see the admin moderation queue in
+action) — including a real photo for each, generated locally and pushed through the actual
+upload/re-encode pipeline, so nothing depends on external image hosts. The demo tenant is also
+given one already-paid `Unlock` (a fabricated Payment/Unlock row inserted directly by the seed
+script — not reachable through any real code path) so you can see the "before payment" and "after
+payment" contact views side by side without needing real M-Pesa sandbox credentials configured yet:
+
+```bash
+SEED_DEMO_DATA=true node prisma/seed.js
+```
+
+This prints three accounts you can log into once the frontend is running:
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | (from `SEED_ADMIN_EMAIL`, default `admin@example.com`) | printed by the seed script |
+| Landlord | `demo.landlord@example.com` | `DemoPass123!` |
+| Tenant | `demo.tenant@example.com` | `DemoPass123!` |
+
+Log in as the tenant and open "Modern 2 Bedroom Apartment" to see the unlocked contact view
+immediately; log in as the admin and open Listings to approve the pending "3 Bedroom Family Home".
+Running the seed again is safe — it skips demo data it already created.
+
 ## Frontend setup
 
 The frontend has no build step. For local development, serve it with any static file server:
