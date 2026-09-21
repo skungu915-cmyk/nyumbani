@@ -1,0 +1,33 @@
+# Netlify deployment config — an OPTIONAL convenience path for spinning up a quick, publicly
+# reachable demo (frontend + backend on one origin, Postgres via Netlify DB/Neon) without standing
+# up your own server. The documented, primary way to run this app in production is still the
+# plain Node/Express + PostgreSQL setup described in README.md — this file exists alongside it,
+# not instead of it.
+#
+# Known limitations of this deployment path (see README.md "Netlify demo deployment" section):
+#   - Serverless functions have an ephemeral filesystem, so uploaded property photos do not
+#     persist between invocations. Everything else (auth, RBAC, the contact-redaction logic,
+#     payments, reviews, landlord/admin dashboards) works identically to the Node/Express path.
+#   - M-Pesa STK Push still requires real Safaricom Daraja credentials to be set as env vars;
+#     without them, "Pay & Unlock" fails gracefully with a clean error, same as any deployment.
+
+[build]
+  publish = "frontend"
+  functions = "netlify/functions"
+  command = "npm install && cd backend && npm install"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Send every /api/* request to the single Express app wrapped as one Netlify Function, so all
+# existing Express routes/middleware/services work unchanged instead of being rewritten as many
+# small functions.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/media/*"
+  to = "/.netlify/functions/api/media/:splat"
+  status = 200

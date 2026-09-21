@@ -179,8 +179,12 @@ async function seedDemoData(adminId) {
         ...data,
       },
     });
+    // Skip generating/writing a local photo file when seeding a database that a serverless
+    // deployment (no persistent local disk) will actually serve from — e.g. seeding a Netlify DB
+    // directly from a different machine. The frontend already falls back to a placeholder image
+    // for a photo-less listing, so this keeps the demo looking correct either way.
     // eslint-disable-next-line no-await-in-loop
-    const filename = await placeholderPhoto(color).catch(() => null);
+    const filename = process.env.SEED_SKIP_PHOTOS === 'true' ? null : await placeholderPhoto(color).catch(() => null);
     if (filename) {
       // eslint-disable-next-line no-await-in-loop
       await prisma.propertyPhoto.create({ data: { propertyId: property.id, filename, isPrimary: true } });

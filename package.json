@@ -1,0 +1,9 @@
+{
+  "name": "liveherehomes-netlify-deploy",
+  "private": true,
+  "description": "Root package.json for the optional Netlify deployment path only — see netlify.toml. The backend/ and frontend/ directories are the actual application and have their own package.json.",
+  "dependencies": {
+    "serverless-http": "^3.2.0",
+    "@netlify/database": "^1.0.0"
+  }
+}
