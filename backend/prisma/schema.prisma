@@ -1,0 +1,393 @@
+// LiveHere Homes — data model
+// Design notes (security-relevant):
+//  - Property's exactAddress / ownerName / ownerPhone / geoLat / geoLng are NEVER sent to the API
+//    consumer unless the request is from the property owner, an admin, or a user with a
+//    corresponding SUCCESSFUL Unlock record. Enforced in services/property.service.js, not here.
+//  - Payments are the single source of truth for "did this person pay" — Unlock rows are only ever
+//    created server-side from a verified M-Pesa callback, never from a client request.
+//  - RefreshToken stores a HASH of the token, never the raw token (like a password).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TENANT
+  LANDLORD
+  ADMIN
+}
+
+enum PropertyType {
+  BEDSITTER
+  STUDIO
+  ONE_BED
+  TWO_BED
+  THREE_BED
+  BNB
+}
+
+enum PropertyStatus {
+  PENDING_REVIEW
+  ACTIVE
+  RENTED
+  SUSPENDED
+  EXPIRED
+}
+
+enum PaymentType {
+  UNLOCK
+  PLATFORM_FEE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReferralStatus {
+  PENDING
+  PAID
+}
+
+enum MaintenancePriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MaintenanceStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum EnquiryStatus {
+  UNREAD
+  REPLIED
+  CLOSED
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  phone               String    @unique
+  passwordHash        String
+  role                Role      @default(TENANT)
+  firstName           String
+  lastName             String
+  status              String    @default("active") // active | suspended
+  isEmailVerified     Boolean   @default(false)
+  emailVerifyTokenHash String?
+  emailVerifyExpires  DateTime?
+  passwordResetTokenHash String?
+  passwordResetExpires   DateTime?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  mpesaPayoutNumber   String?
+  agencyName          String?
+  yearsExperience     Int?
+  operatingAreas      String?
+
+  referralCode        String    @unique
+  referredByUserId    String?
+  referredBy          User?     @relation("Referrals", fields: [referredByUserId], references: [id])
+  referredUsers       User[]    @relation("Referrals")
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  properties          Property[]        @relation("PropertyOwner")
+  payments            Payment[]
+  unlocks             Unlock[]
+  reviews             Review[]
+  refreshTokens       RefreshToken[]
+  referralsGiven      Referral[]        @relation("Referrer")
+  referralsReceived   Referral[]        @relation("Referred")
+  maintenanceRequests MaintenanceRequest[]
+  notices             Notice[]
+  enquiries           Enquiry[]
+  auditLogs           AuditLog[]
+  tenancies           Tenancy[]         @relation("TenantUser")
+
+  @@index([role])
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique
+  userAgent   String?
+  ip          String?
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  replacedByTokenHash String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Property {
+  id             String         @id @default(uuid())
+  ownerId        String
+  owner          User           @relation("PropertyOwner", fields: [ownerId], references: [id])
+
+  title          String
+  type           PropertyType
+  rentAmount     Int
+  bedrooms       Int            @default(0)
+  bathrooms      Int            @default(1)
+  parkingSpaces  Int            @default(0)
+  sizeSqm        Int?
+  floor          String?
+  area           String
+  county         String         @default("Nairobi")
+  description    String
+  amenities      String[]       @default([])
+  status         PropertyStatus @default(PENDING_REVIEW)
+  viewingFeeKes  Int            @default(1000)
+  isSelfListed   Boolean        @default(true)
+  views          Int            @default(0)
+
+  // Restricted fields — see services/property.service.js for the redaction rule.
+  exactAddress   String
+  ownerName      String
+  ownerPhone     String
+  geoLat         Float?
+  geoLng         Float?
+
+  photos         PropertyPhoto[]
+  videos         PropertyVideo[]
+  unlocks        Unlock[]
+  payments       Payment[]
+  reviews        Review[]
+  tenancies      Tenancy[]
+  maintenanceRequests MaintenanceRequest[]
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([type])
+  @@index([area])
+}
+
+model PropertyPhoto {
+  id          String   @id @default(uuid())
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  filename    String   // randomized, stored on disk under UPLOAD_DIR/properties/
+  isPrimary   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([propertyId])
+}
+
+model PropertyVideo {
+  id          String   @id @default(uuid())
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  filename    String
+  createdAt   DateTime @default(now())
+
+  @@index([propertyId])
+}
+
+// A verified "this user paid to view this property's contact details" record.
+// Only ever inserted by the M-Pesa callback handler after a SUCCESS payment.
+model Unlock {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id])
+  paymentId   String   @unique
+  payment     Payment  @relation(fields: [paymentId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, propertyId])
+  @@index([propertyId])
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  userId                String
+  user                  User          @relation(fields: [userId], references: [id])
+  propertyId            String?
+  property              Property?     @relation(fields: [propertyId], references: [id])
+  type                  PaymentType   @default(UNLOCK)
+  amountKes             Int
+  phoneNumber           String
+  status                PaymentStatus @default(PENDING)
+
+  merchantRequestId     String?       @unique
+  checkoutRequestId     String        @unique
+  mpesaReceiptNumber    String?       @unique
+  resultCode             Int?
+  resultDesc             String?
+  rawCallback           Json?
+
+  unlock                Unlock?
+
+  createdAt             DateTime      @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Review {
+  id          String       @id @default(uuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  propertyId  String?
+  property    Property?    @relation(fields: [propertyId], references: [id])
+  stars       Int
+  text        String
+  status      ReviewStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  @@unique([userId, propertyId])
+  @@index([propertyId])
+  @@index([status])
+}
+
+model Referral {
+  id               String         @id @default(uuid())
+  referrerUserId   String
+  referrer         User           @relation("Referrer", fields: [referrerUserId], references: [id])
+  referredUserId   String         @unique
+  referred         User           @relation("Referred", fields: [referredUserId], references: [id])
+  rewardKes        Int            @default(0)
+  status           ReferralStatus @default(PENDING)
+  triggeringPaymentId String?
+  createdAt        DateTime       @default(now())
+  paidAt           DateTime?
+
+  @@index([referrerUserId])
+}
+
+model Tenancy {
+  id            String    @id @default(uuid())
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id])
+  tenantUserId  String?
+  tenantUser    User?     @relation("TenantUser", fields: [tenantUserId], references: [id])
+  tenantName    String
+  tenantPhone   String
+  rentAmount    Int
+  status        String    @default("active") // active | overdue | ended
+  leaseStart    DateTime  @default(now())
+  leaseEnd      DateTime?
+  createdAt     DateTime  @default(now())
+
+  rentPayments  RentPayment[]
+
+  @@index([propertyId])
+}
+
+// Manual/self-reported rent records the landlord logs (rent is paid landlord<->tenant directly,
+// LiveHere Homes never touches rent money — only the one-off unlock fee flows through the platform).
+model RentPayment {
+  id          String   @id @default(uuid())
+  tenancyId   String
+  tenancy     Tenancy  @relation(fields: [tenancyId], references: [id])
+  amountKes   Int
+  mpesaCode   String?
+  paidAt      DateTime @default(now())
+  status      String   @default("paid")
+
+  @@index([tenancyId])
+}
+
+model MaintenanceRequest {
+  id          String              @id @default(uuid())
+  propertyId  String
+  property    Property            @relation(fields: [propertyId], references: [id])
+  createdById String
+  createdBy   User                @relation(fields: [createdById], references: [id])
+  unitLabel   String?
+  issue       String
+  priority    MaintenancePriority @default(MEDIUM)
+  status      MaintenanceStatus   @default(OPEN)
+  createdAt   DateTime            @default(now())
+  resolvedAt  DateTime?
+
+  @@index([propertyId])
+}
+
+model Notice {
+  id          String   @id @default(uuid())
+  landlordId  String
+  landlord    User     @relation(fields: [landlordId], references: [id])
+  recipient   String
+  subject     String
+  message     String
+  channel     String   @default("app")
+  createdAt   DateTime @default(now())
+}
+
+model Enquiry {
+  id          String        @id @default(uuid())
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id])
+  name        String
+  contact     String
+  propertyId  String?
+  subject     String
+  message     String
+  status      EnquiryStatus @default(UNREAD)
+  createdAt   DateTime      @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entityType, entityId])
+}
+
+// Singleton row (id always "singleton") holding admin-editable, non-secret platform config.
+// M-Pesa API secrets themselves are NEVER stored here — they live only in server env vars.
+model PlatformSetting {
+  id                      String   @id @default("singleton")
+  platformName            String   @default("LiveHere Homes")
+  supportEmail            String   @default("hello@livehere.co.ke")
+  supportPhone            String   @default("+254700000000")
+  unlockFeeKes            Int      @default(1000)
+  platformFeePercent      Float    @default(3)
+  referralRewardKes       Int      @default(200)
+  watermarkPhotos         Boolean  @default(true)
+  lockAddressUntilPaid    Boolean  @default(true)
+  lockPhoneUntilPaid      Boolean  @default(true)
+  selfListingPublic       Boolean  @default(true)
+  autoApproveListings     Boolean  @default(false)
+  referralProgramActive   Boolean  @default(true)
+  mpesaBusinessName       String   @default("LiveHere Homes")
+  mpesaPaymentType        String   @default("paybill") // paybill | till | pochi
+  mpesaPaymentDestination String   @default("174379")
+  updatedAt               DateTime @updatedAt
+}

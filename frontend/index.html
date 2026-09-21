@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LiveHere Homes — Find it. Live in it.</title>
+<meta name="description" content="Verified rental homes across Kenya. Pay once to unlock the real contact — no fake listings, no ghost agents.">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- PORTAL BAR -->
+<div class="pbar">
+  <div class="pb-brand">
+    <span>🏠 LIVEHERE HOMES</span>
+    <span style="display:block;font-size:9px;font-weight:400;opacity:.55;letter-spacing:1px;margin-top:1px">Find it. Live in it.</span>
+  </div>
+  <div class="pb-tabs">
+    <button class="ptab on" data-action="switchPortal" data-portal="c">🏠 Find a Home</button>
+    <button class="ptab" data-action="switchPortal" data-portal="l">🏢 Landlord</button>
+    <button class="ptab" data-action="switchPortal" data-portal="a">⚡ Admin</button>
+  </div>
+</div>
+
+<!-- ═══════════════ CUSTOMER PORTAL ═══════════════ -->
+<div class="portal on" id="portal-c">
+  <nav class="nav">
+    <div class="nav-logo" data-action="switchPortal" data-portal="c">
+      <div class="logo-ico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">LiveHere<b>Homes</b></div>
+        <div class="logo-tag">FIND IT. LIVE IN IT.</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a class="act" data-action="scrollTop">Home</a>
+      <a data-action="scrollTo" data-target="listSec">Properties</a>
+      <a data-action="openModal" data-modal="aboutOvl">About</a>
+      <a data-action="openModal" data-modal="contactOvl">Contact</a>
+      <a class="gold" data-action="openReviews">⭐ Reviews</a>
+      <a class="tlnk" data-action="openReferral">🎁 Refer &amp; Earn</a>
+    </div>
+    <div class="nav-right" id="navRightGuest">
+      <button class="nav-login" data-action="openLogin">Login</button>
+      <button class="nav-btn btn-teal" data-action="openSignup">Sign Up</button>
+      <button class="nav-btn btn-gold" data-action="openSelfList">+ List Property</button>
+    </div>
+    <div class="nav-right hidden" id="navRightUser">
+      <span style="font-size:12px;color:rgba(255,255,255,.6)" id="navUserName"></span>
+      <button class="nav-btn btn-gold" data-action="openSelfList">+ List Property</button>
+      <button class="nav-btn btn-sm btn-outline" data-action="logout">Logout</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-ov"></div>
+    <div class="hero-content">
+      <div class="hero-eye">LiveHere Homes</div>
+      <h1>Stop searching.<br>Start <span>living.</span></h1>
+      <p class="hero-sub">Verified homes across Kenya. Pay once to unlock the real contact — no fake listings, no ghost agents, no wasted trips.</p>
+      <div class="search-bar">
+        <div class="sb-f">
+          <div class="sb-lbl">📍 Location</div>
+          <input id="sLoc" placeholder="e.g. Kilimani, Westlands...">
+        </div>
+        <div class="sb-f">
+          <div class="sb-lbl">🏠 Property Type</div>
+          <select id="sType">
+            <option value="">Any Type</option>
+            <option value="BEDSITTER">Bedsitter</option>
+            <option value="STUDIO">Studio</option>
+            <option value="ONE_BED">1 Bedroom</option>
+            <option value="TWO_BED">2 Bedroom</option>
+            <option value="THREE_BED">3 Bedroom</option>
+            <option value="BNB">BnB / Short Stay</option>
+          </select>
+        </div>
+        <div class="sb-f">
+          <div class="sb-lbl">💰 Max Budget</div>
+          <select id="sBudg">
+            <option value="">Any Budget</option>
+            <option value="10000">Up to KES 10,000</option>
+            <option value="20000">Up to KES 20,000</option>
+            <option value="30000">Up to KES 30,000</option>
+            <option value="50000">Up to KES 50,000</option>
+            <option value="100000">Up to KES 100,000</option>
+          </select>
+        </div>
+        <button class="sb-btn" data-action="doSearch">🔍 Search</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cat-strip">
+    <button class="cat-item on" data-action="catFilter" data-type="">Any<div class="cat-ico">🏢</div><span class="cat-lbl">All</span></button>
+    <button class="cat-item" data-action="catFilter" data-type="THREE_BED"><div class="cat-ico">🏠</div><span class="cat-lbl">Houses</span></button>
+    <button class="cat-item" data-action="catFilter" data-type="BEDSITTER"><div class="cat-ico">🛏️</div><span class="cat-lbl">Bedsitters</span></button>
+    <button class="cat-item" data-action="catFilter" data-type="STUDIO"><div class="cat-ico">🪑</div><span class="cat-lbl">Studios</span></button>
+    <button class="cat-item" data-action="catFilter" data-type="BNB"><div class="cat-ico">🏨</div><span class="cat-lbl">BnB / Short Stay</span></button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item"><div class="stat-val" id="statListings">—</div><div class="stat-lbl">Active Listings</div></div>
+      <div class="stat-item"><div class="stat-val" id="statTenants">—</div><div class="stat-lbl">Registered Tenants</div></div>
+      <div class="stat-item"><div class="stat-val">98%</div><div class="stat-lbl">Verified Listings</div></div>
+      <div class="stat-item"><div class="stat-val">4.9★</div><div class="stat-lbl">Platform Rating</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="feat-head">
+      <div>
+        <div class="sec-eye">Featured Properties</div>
+        <div class="sec-title">Handpicked for you</div>
+      </div>
+      <button class="view-all-btn" data-action="scrollTo" data-target="listSec">View all properties →</button>
+    </div>
+    <div class="feat-layout">
+      <div id="feat1"></div>
+      <div id="feat2"></div>
+      <div id="feat3"></div>
+      <div class="why-panel">
+        <div class="why-img">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Nairobi">
+          <div class="why-img-g"></div>
+        </div>
+        <div class="why-body">
+          <div class="why-eye">Why Choose Us</div>
+          <div class="why-title">Better homes.<br><b>Brighter futures.</b></div>
+          <div class="why-pts">
+            <div class="why-pt"><div class="why-ico wi1">✅</div><div><div class="why-pt-h">Verified listings</div><div class="why-pt-s">Only genuine properties</div></div></div>
+            <div class="why-pt"><div class="why-ico wi2">🔒</div><div><div class="why-pt-h">Secure payments</div><div class="why-pt-s">M-Pesa, safe &amp; instant</div></div></div>
+            <div class="why-pt"><div class="why-ico wi3">💬</div><div><div class="why-pt-h">Dedicated support</div><div class="why-pt-s">We're here for you</div></div></div>
+          </div>
+          <button class="why-btn" data-action="openModal" data-modal="contactOvl">Learn more →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="listSec" class="listings-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+      <div style="font-family:'Outfit',sans-serif;font-size:24px;font-weight:900;color:var(--ink);letter-spacing:-.5px">All Available Properties</div>
+    </div>
+    <div class="fstrip">
+      <button class="fp on" data-action="quickFilter" data-type="">All</button>
+      <button class="fp" data-action="quickFilter" data-type="BEDSITTER">Bedsitter</button>
+      <button class="fp" data-action="quickFilter" data-type="ONE_BED">1 Bedroom</button>
+      <button class="fp" data-action="quickFilter" data-type="TWO_BED">2 Bedroom</button>
+      <button class="fp" data-action="quickFilter" data-type="THREE_BED">3 Bedroom</button>
+      <button class="fp" data-action="quickFilter" data-type="STUDIO">Studio</button>
+      <button class="fp" data-action="quickFilter" data-type="BNB">🏨 BnB</button>
+    </div>
+    <div class="pgrid" id="pgrid"><div class="empty-state">Loading properties…</div></div>
+    <div class="pager" id="listPager"></div>
+  </div>
+
+  <div class="cta-strip">
+    <div class="cta-inner">
+      <div class="cta-img"><img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&q=80" alt="Happy tenant"></div>
+      <div>
+        <div class="cta-eye">Your Next Chapter</div>
+        <div class="cta-h2">The perfect home<br>is just a <b>click away.</b></div>
+      </div>
+      <div class="cta-feat"><div class="cta-feat-ico">🏠</div><div class="cta-feat-ttl">Wide selection</div><div class="cta-feat-sub">Homes for every lifestyle</div></div>
+      <div class="cta-feat"><div class="cta-feat-ico">📍</div><div class="cta-feat-ttl">Great locations</div><div class="cta-feat-sub">Near work, school &amp; more</div></div>
+      <div class="cta-feat"><div class="cta-feat-ico">⚡</div><div class="cta-feat-ttl">Easy booking</div><div class="cta-feat-sub">Simple &amp; hassle-free</div></div>
+      <div class="cta-feat"><div class="cta-feat-ico">📱</div><div class="cta-feat-ttl">Mobile friendly</div><div class="cta-feat-sub">Search anytime, anywhere</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-grid">
+        <div>
+          <div class="foot-logo-row">
+            <div class="foot-logo-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+            <div class="foot-name">LiveHere<b>Homes</b></div>
+          </div>
+          <p>Kenya's trusted property discovery platform. Real listings, real photos, real people. Pay to unlock, move with confidence.</p>
+        </div>
+        <div class="foot-col">
+          <h5>Browse</h5>
+          <a data-action="scrollTo" data-target="listSec">All Listings</a>
+        </div>
+        <div class="foot-col">
+          <h5>Landlords</h5>
+          <a data-action="openSelfList">List a Property</a>
+          <a data-action="switchPortal" data-portal="l">Landlord Portal</a>
+          <a data-action="openModal" data-modal="contactOvl">Partner With Us</a>
+        </div>
+        <div class="foot-col">
+          <h5>Company</h5>
+          <a data-action="openModal" data-modal="aboutOvl">About Us</a>
+          <a data-action="openModal" data-modal="contactOvl">Contact Us</a>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span id="footYear">© LiveHere Homes Ltd. All rights reserved.</span>
+        <span class="foot-badge">BUILT IN KENYA 🇰🇪</span>
+      </div>
+    </div>
+  </footer>
+</div><!-- /portal-c -->
+
+<!-- ═══════════════ LANDLORD PORTAL ═══════════════ -->
+<div class="portal" id="portal-l">
+  <div class="ll-wrap">
+    <div class="ll-top">
+      <div class="ll-top-logo">LiveHere<b>Homes</b> <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.5)">— Landlord Portal</span></div>
+      <div style="display:flex;align-items:center;gap:9px">
+        <button class="nav-btn btn-teal btn-sm" data-action="openSelfList">+ Add Property</button>
+        <span style="font-size:12px;color:rgba(255,255,255,.5)" id="llUserName"></span>
+        <button class="nav-btn btn-sm btn-outline" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)" data-action="logout">Logout</button>
+      </div>
+    </div>
+    <div class="ll-shell">
+      <div class="ll-sb">
+        <div class="ll-sb-lbl">OVERVIEW</div>
+        <button class="ll-nav on" data-action="showLV" data-view="ll-dashboard"><span class="ll-nav-ico">📊</span>Dashboard</button>
+        <button class="ll-nav" data-action="showLV" data-view="ll-units"><span class="ll-nav-ico">🏠</span>My Units</button>
+        <button class="ll-nav" data-action="showLV" data-view="ll-tenants"><span class="ll-nav-ico">👥</span>Tenants</button>
+        <div class="ll-sb-lbl">FINANCE</div>
+        <button class="ll-nav" data-action="showLV" data-view="ll-revenue"><span class="ll-nav-ico">📈</span>Revenue</button>
+        <div class="ll-sb-lbl">MANAGE</div>
+        <button class="ll-nav" data-action="showLV" data-view="ll-maintenance"><span class="ll-nav-ico">🔧</span>Maintenance</button>
+        <button class="ll-nav" data-action="showLV" data-view="ll-notices"><span class="ll-nav-ico">📋</span>Notices</button>
+      </div>
+      <div class="ll-main">
+        <div class="lv on" id="lv-ll-dashboard">
+          <div class="lv-head"><div><div class="lv-title">Dashboard</div><div class="lv-sub">Your portfolio at a glance.</div></div></div>
+          <div class="ll-kpis" id="llKpis"></div>
+          <div class="ll-panel">
+            <div class="ll-panel-head"><div class="ll-panel-title">📈 Monthly Rent Revenue (6 months)</div></div>
+            <div style="padding:16px 18px"><div style="display:flex;align-items:flex-end;gap:6px;height:80px" id="llChart"></div></div>
+          </div>
+        </div>
+
+        <div class="lv" id="lv-ll-units">
+          <div class="lv-head"><div><div class="lv-title">My Units</div><div class="lv-sub">Manage all your properties</div></div><button class="nav-btn btn-teal btn-sm" data-action="openSelfList">+ Add Unit</button></div>
+          <div class="ll-panel"><div class="ll-panel-head"><div class="ll-panel-title">All Units</div></div>
+            <table class="llt" style="width:100%"><thead><tr><th>Title</th><th>Type</th><th>Area</th><th>Rent</th><th>Status</th><th>Actions</th></tr></thead><tbody id="llUnitsTbl"></tbody></table>
+          </div>
+        </div>
+
+        <div class="lv" id="lv-ll-tenants">
+          <div class="lv-head"><div><div class="lv-title">Tenants</div><div class="lv-sub">All current tenancies</div></div><button class="nav-btn btn-teal btn-sm" data-action="openModal" data-modal="addTenantOvl">+ Add Tenant</button></div>
+          <div class="ll-panel"><div class="ll-panel-head"><div class="ll-panel-title">Tenancies</div></div>
+            <table class="llt" style="width:100%"><thead><tr><th>Name</th><th>Property</th><th>Phone</th><th>Rent (KES)</th><th>Status</th><th>Actions</th></tr></thead><tbody id="llTenantsTbl"></tbody></table>
+          </div>
+        </div>
+
+        <div class="lv" id="lv-ll-revenue">
+          <div class="lv-head"><div><div class="lv-title">Revenue Analytics</div><div class="lv-sub">Rent is paid tenant → landlord directly via M-Pesa; log it here for your records.</div></div></div>
+          <div class="ll-kpis" id="llRevKpis"></div>
+        </div>
+
+        <div class="lv" id="lv-ll-maintenance">
+          <div class="lv-head"><div><div class="lv-title">Maintenance</div><div class="lv-sub">Track and resolve requests</div></div><button class="nav-btn btn-teal btn-sm" data-action="openModal" data-modal="maintOvl">+ New Request</button></div>
+          <div class="ll-panel"><div class="ll-panel-head"><div class="ll-panel-title">Requests</div></div>
+            <table class="llt" style="width:100%"><thead><tr><th>Date</th><th>Property</th><th>Issue</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead><tbody id="llMaintTbl"></tbody></table>
+          </div>
+        </div>
+
+        <div class="lv" id="lv-ll-notices">
+          <div class="lv-head"><div><div class="lv-title">Notices</div><div class="lv-sub">Send notices to tenants</div></div><button class="nav-btn btn-teal btn-sm" data-action="openModal" data-modal="noticeOvl">+ Send Notice</button></div>
+          <div class="ll-panel"><div class="ll-panel-head"><div class="ll-panel-title">Sent Notices</div></div>
+            <table class="llt" style="width:100%"><thead><tr><th>Date</th><th>Recipient</th><th>Subject</th><th>Channel</th></tr></thead><tbody id="llNoticesTbl"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /portal-l -->
+
+<!-- ═══════════════ ADMIN PORTAL ═══════════════ -->
+<div class="portal" id="portal-a">
+<div class="ad-wrap">
+  <div class="ad-top">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="ad-logo">LiveHere<b>Homes</b></div>
+      <div class="ad-badge">ADMIN</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:9px">
+      <span style="font-size:12px;color:rgba(255,255,255,.4)" id="adUserName"></span>
+      <button class="nav-btn btn-sm btn-outline" style="color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.1)" data-action="logout">Logout</button>
+    </div>
+  </div>
+  <div class="ad-shell">
+    <div class="ad-sb">
+      <div class="ad-sb-sec">
+        <div class="ad-sb-lbl">MAIN</div>
+        <button class="ad-nav on" data-action="showAV" data-view="overview"><span class="ad-nav-ico">📊</span>Overview</button>
+        <button class="ad-nav" data-action="showAV" data-view="listings"><span class="ad-nav-ico">🏠</span>Listings</button>
+        <button class="ad-nav" data-action="showAV" data-view="add"><span class="ad-nav-ico">➕</span>Add Listing</button>
+      </div>
+      <div class="ad-sb-sec">
+        <div class="ad-sb-lbl">BUSINESS</div>
+        <button class="ad-nav" data-action="showAV" data-view="tx"><span class="ad-nav-ico">💳</span>Transactions</button>
+        <button class="ad-nav" data-action="showAV" data-view="landlords"><span class="ad-nav-ico">🏢</span>Landlords</button>
+        <button class="ad-nav" data-action="showAV" data-view="users"><span class="ad-nav-ico">👤</span>Users</button>
+        <button class="ad-nav" data-action="showAV" data-view="enquiries"><span class="ad-nav-ico">💬</span>Enquiries</button>
+        <button class="ad-nav" data-action="showAV" data-view="reviews"><span class="ad-nav-ico">⭐</span>Reviews</button>
+      </div>
+      <div class="ad-sb-sec">
+        <div class="ad-sb-lbl">SYSTEM</div>
+        <button class="ad-nav" data-action="showAV" data-view="mpesa"><span class="ad-nav-ico">📱</span>M-Pesa Status</button>
+        <button class="ad-nav" data-action="showAV" data-view="settings"><span class="ad-nav-ico">⚙️</span>Settings</button>
+      </div>
+    </div>
+    <div class="ad-main">
+      <div class="av on" id="av-overview">
+        <div class="av-head"><div><div class="av-title">Dashboard</div><div class="av-sub">Platform snapshot</div></div></div>
+        <div class="kpis" id="adKpis"></div>
+        <div class="ad-panel">
+          <div class="ad-panel-head"><div class="ad-panel-title">Recent Transactions</div></div>
+          <table class="adt"><thead><tr><th>Ref</th><th>Property</th><th>Phone</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody id="adTxRecent"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-listings">
+        <div class="av-head"><div><div class="av-title">All Listings</div><div class="av-sub">Manage every property on the platform</div></div></div>
+        <div class="ad-panel">
+          <div class="ad-panel-head"><div class="ad-panel-title">Properties</div><input class="ad-search" id="adListSearch" placeholder="Search listings..."></div>
+          <table class="adt"><thead><tr><th>Title</th><th>Type</th><th>Rent</th><th>Area</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adListTbl"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-add">
+        <div class="av-head"><div><div class="av-title">Add New Listing</div><div class="av-sub">Address &amp; phone are hidden from public until payment — enforced server-side</div></div></div>
+        <form class="ad-form" id="adAddForm">
+          <div class="af-sec">Basic Information</div>
+          <div class="af-row">
+            <div class="af-g"><label class="af-lbl">Property Title</label><input class="af-in" name="title" required placeholder="e.g. Spacious 2BR Kilimani"></div>
+            <div class="af-g"><label class="af-lbl">Property Type</label><select class="af-sel" name="type">
+              <option value="BEDSITTER">Bedsitter</option><option value="STUDIO">Studio</option><option value="ONE_BED">1 Bedroom</option>
+              <option value="TWO_BED" selected>2 Bedroom</option><option value="THREE_BED">3 Bedroom</option><option value="BNB">BnB / Short Stay</option>
+            </select></div>
+          </div>
+          <div class="af-row">
+            <div class="af-g"><label class="af-lbl">Monthly Rent (KES)</label><input class="af-in" name="rentAmount" type="number" required placeholder="25000"></div>
+            <div class="af-g"><label class="af-lbl">Area / Neighbourhood</label><input class="af-in" name="area" required placeholder="e.g. Kilimani, Nairobi"></div>
+          </div>
+          <div class="af-row">
+            <div class="af-g"><label class="af-lbl">Bedrooms</label><input class="af-in" name="bedrooms" type="number" min="0" value="2"></div>
+            <div class="af-g"><label class="af-lbl">Bathrooms</label><input class="af-in" name="bathrooms" type="number" min="0" value="1"></div>
+          </div>
+          <div class="af-g"><label class="af-lbl">Description</label><textarea class="af-ta" name="description" required placeholder="Describe the property — features, condition, nearby landmarks..."></textarea></div>
+          <div class="af-sec">🔒 Restricted — Hidden Until Payment Confirmed</div>
+          <div class="locked-z">
+            <div class="locked-z-h">🔒 Revealed only after M-Pesa payment is confirmed server-side</div>
+            <div class="af-row">
+              <div class="af-g"><label class="af-lbl">Exact Address</label><input class="af-in" name="exactAddress" required placeholder="Apt 4B, Silverstone Apts, off Elgeyo Marakwet Rd"></div>
+              <div class="af-g"><label class="af-lbl">Caretaker / Owner Phone</label><input class="af-in" name="ownerPhone" placeholder="+254 7XX XXX XXX"></div>
+            </div>
+            <div class="af-g"><label class="af-lbl">Owner / Caretaker Name</label><input class="af-in" name="ownerName" placeholder="Full name"></div>
+          </div>
+          <div class="af-sec">Amenities</div>
+          <div class="af-chks" id="adAmenities">
+            <label class="af-chl"><input type="checkbox" value="WiFi"> WiFi</label>
+            <label class="af-chl"><input type="checkbox" value="Parking"> Parking</label>
+            <label class="af-chl"><input type="checkbox" value="Security"> Security 24hr</label>
+            <label class="af-chl"><input type="checkbox" value="Water 24hr"> Water 24hr</label>
+            <label class="af-chl"><input type="checkbox" value="Furnished"> Furnished</label>
+            <label class="af-chl"><input type="checkbox" value="CCTV"> CCTV</label>
+          </div>
+          <div class="af-sec">Photos</div>
+          <input type="file" id="adPhotoInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
+          <label for="adPhotoInput" class="ad-upload" style="cursor:pointer;display:block">
+            <div style="font-size:24px;margin-bottom:4px">📸</div>
+            <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.6)">Click to Upload Photos</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">JPG/PNG/WEBP · re-encoded &amp; EXIF-stripped server-side · watermark auto-applied</div>
+            <div id="adPhotoPreview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;justify-content:center"></div>
+          </label>
+          <div style="display:flex;gap:10px;margin-top:18px">
+            <button type="submit" style="flex:1;padding:12px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">✓ Publish Listing</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="av" id="av-tx">
+        <div class="av-head"><div><div class="av-title">Transactions</div><div class="av-sub">All viewing-fee payments (verified server-side via M-Pesa callback)</div></div></div>
+        <div class="ad-panel">
+          <div class="ad-panel-head"><div class="ad-panel-title">M-Pesa Viewing Payments</div><input class="ad-search" id="adTxSearch" placeholder="Search ref or phone..."></div>
+          <table class="adt"><thead><tr><th>Ref</th><th>Phone</th><th>Property</th><th>Amount</th><th>Receipt</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="adTxTbl"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-landlords">
+        <div class="av-head"><div><div class="av-title">Landlords</div><div class="av-sub">Property owners using LiveHere Homes</div></div></div>
+        <div class="ad-panel"><div class="ad-panel-head"><div class="ad-panel-title">Registered Landlords</div></div>
+          <table class="adt"><thead><tr><th>Name</th><th>Phone</th><th>Units</th><th>Revenue</th><th>Platform Fee Due</th><th>Status</th></tr></thead><tbody id="adLandlordsTbl"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-users">
+        <div class="av-head"><div><div class="av-title">Users</div><div class="av-sub">All accounts on the platform</div></div></div>
+        <div class="ad-panel"><div class="ad-panel-head"><div class="ad-panel-title">Accounts</div><input class="ad-search" id="adUserSearch" placeholder="Search users..."></div>
+          <table class="adt"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="adUsersTbl"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-enquiries">
+        <div class="av-head"><div><div class="av-title">Enquiries</div><div class="av-sub">Customer messages and support</div></div></div>
+        <div class="ad-panel"><div class="ad-panel-head"><div class="ad-panel-title">Messages</div></div>
+          <table class="adt"><thead><tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="adEnqTbl"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-reviews">
+        <div class="av-head"><div><div class="av-title">Reviews Moderation</div><div class="av-sub">Approve or reject pending reviews before they go public</div></div></div>
+        <div class="ad-panel"><div class="ad-panel-head"><div class="ad-panel-title">Pending Reviews</div></div>
+          <table class="adt"><thead><tr><th>Author</th><th>Property</th><th>Stars</th><th>Text</th><th>Action</th></tr></thead><tbody id="adReviewsTbl"></tbody></table>
+        </div>
+      </div>
+
+      <div class="av" id="av-mpesa">
+        <div class="av-head"><div><div class="av-title">M-Pesa Status</div><div class="av-sub">Read-only — credentials are configured via server environment variables only, never through this UI</div></div></div>
+        <div class="ad-panel"><div style="padding:18px" id="mpesaStatusBox">Loading…</div></div>
+      </div>
+
+      <div class="av" id="av-settings">
+        <div class="av-head"><div><div class="av-title">Platform Settings</div><div class="av-sub">Non-secret business configuration</div></div><button class="nav-btn btn-teal btn-sm" data-action="saveAdminSettings">Save</button></div>
+        <form class="sg-grid" id="adSettingsForm">
+          <div class="sg-card"><h4>General</h4>
+            <div class="af-g"><label class="af-lbl">Platform Name</label><input class="af-in" name="platformName"></div>
+            <div class="af-g"><label class="af-lbl">Support Email</label><input class="af-in" name="supportEmail"></div>
+            <div class="af-g"><label class="af-lbl">Support Phone</label><input class="af-in" name="supportPhone"></div>
+            <div class="af-g"><label class="af-lbl">Unlock Fee (KES)</label><input class="af-in" name="unlockFeeKes" type="number"></div>
+            <div class="af-g"><label class="af-lbl">Platform Fee (%)</label><input class="af-in" name="platformFeePercent" type="number" step="0.1"></div>
+            <div class="af-g"><label class="af-lbl">Referral Reward (KES)</label><input class="af-in" name="referralRewardKes" type="number"></div>
+          </div>
+          <div class="sg-card"><h4>Feature Toggles</h4>
+            <div class="tr"><span class="tr-lbl">Watermark photos</span><label class="tog"><input type="checkbox" name="watermarkPhotos"><span class="tog-sl"></span></label></div>
+            <div class="tr"><span class="tr-lbl">Lock address until paid</span><label class="tog"><input type="checkbox" name="lockAddressUntilPaid"><span class="tog-sl"></span></label></div>
+            <div class="tr"><span class="tr-lbl">Lock phone until paid</span><label class="tog"><input type="checkbox" name="lockPhoneUntilPaid"><span class="tog-sl"></span></label></div>
+            <div class="tr"><span class="tr-lbl">Public self-listing</span><label class="tog"><input type="checkbox" name="selfListingPublic"><span class="tog-sl"></span></label></div>
+            <div class="tr"><span class="tr-lbl">Auto-approve listings</span><label class="tog"><input type="checkbox" name="autoApproveListings"><span class="tog-sl"></span></label></div>
+            <div class="tr"><span class="tr-lbl">Referral program active</span><label class="tog"><input type="checkbox" name="referralProgramActive"><span class="tog-sl"></span></label></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /portal-a -->
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+<div class="ovl" id="loginOvl" data-modal>
+  <div class="mdl mdl-sm">
+    <div class="mdl-head"><h3>Welcome back</h3><button class="mdl-x" data-action="closeModal" data-modal="loginOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="loginForm">
+        <div class="fg"><label class="fl">Email or Phone</label><input class="fi" name="identifier" required></div>
+        <div class="fg"><label class="fl">Password</label><input class="fi" name="password" type="password" required></div>
+        <div class="ferr" id="loginErr"></div>
+        <button class="btn-w btn-teal" style="width:100%;margin-top:6px" type="submit">Log In</button>
+      </form>
+      <div class="fhint" style="text-align:center;margin-top:10px">No account? <a href="#" data-action="openSignup">Sign up</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="signupOvl" data-modal>
+  <div class="mdl mdl-md">
+    <div class="mdl-head"><h3>Create your account</h3><button class="mdl-x" data-action="closeModal" data-modal="signupOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="signupForm">
+        <div class="af-chks" style="margin-bottom:13px">
+          <label class="acct-type on" style="flex:1;padding:12px 8px"><input type="radio" name="role" value="TENANT" checked style="display:block;margin:0 auto 4px"><div style="font-size:12px;font-weight:700">Tenant</div></label>
+          <label class="acct-type" style="flex:1;padding:12px 8px"><input type="radio" name="role" value="LANDLORD" style="display:block;margin:0 auto 4px"><div style="font-size:12px;font-weight:700">Landlord</div></label>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">First Name</label><input class="fi" name="firstName" required></div>
+          <div class="fg"><label class="fl">Last Name</label><input class="fi" name="lastName" required></div>
+        </div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" name="email" type="email" required></div>
+        <div class="fg"><label class="fl">Phone</label><input class="fi" name="phone" required placeholder="+2547XXXXXXXX"></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Password</label><input class="fi" name="password" type="password" required></div>
+          <div class="fg"><label class="fl">Confirm Password</label><input class="fi" name="confirmPassword" type="password" required></div>
+        </div>
+        <div class="fg"><label class="fl">Referral Code (optional)</label><input class="fi" name="referralCode"></div>
+        <div class="fhint">Password needs 10+ characters and a mix of upper/lowercase, numbers or symbols.</div>
+        <div class="ferr" id="signupErr"></div>
+        <button class="btn-w btn-teal" style="width:100%;margin-top:10px" type="submit">Create Account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="selfListOvl" data-modal>
+  <div class="mdl mdl-lg">
+    <div class="mdl-head"><h3>List a Property</h3><button class="mdl-x" data-action="closeModal" data-modal="selfListOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="selfListForm">
+        <div class="frow">
+          <div class="fg"><label class="fl">Title</label><input class="fi" name="title" required placeholder="e.g. Cosy 1BR in Ruaka"></div>
+          <div class="fg"><label class="fl">Type</label><select class="fsel" name="type">
+            <option value="BEDSITTER">Bedsitter</option><option value="STUDIO">Studio</option><option value="ONE_BED" selected>1 Bedroom</option>
+            <option value="TWO_BED">2 Bedroom</option><option value="THREE_BED">3 Bedroom</option><option value="BNB">BnB / Short Stay</option>
+          </select></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Monthly Rent (KES)</label><input class="fi" name="rentAmount" type="number" required></div>
+          <div class="fg"><label class="fl">Area</label><input class="fi" name="area" required placeholder="e.g. Ruaka, Kiambu"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Bedrooms</label><input class="fi" name="bedrooms" type="number" min="0" value="1"></div>
+          <div class="fg"><label class="fl">Bathrooms</label><input class="fi" name="bathrooms" type="number" min="0" value="1"></div>
+        </div>
+        <div class="fg"><label class="fl">Description</label><textarea class="fta" name="description" required></textarea></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Exact Address (hidden until paid)</label><input class="fi" name="exactAddress" required></div>
+          <div class="fg"><label class="fl">Contact Phone (hidden until paid)</label><input class="fi" name="ownerPhone" placeholder="+2547XXXXXXXX"></div>
+        </div>
+        <div class="fg">
+          <label class="fl">Location</label>
+          <button type="button" class="geo-btn" id="geoBtn" data-action="pickGeo">📍 Use My Current Location</button>
+        </div>
+        <div class="fg">
+          <label class="fl">Amenities</label>
+          <div class="amen-grid" id="slAmenities">
+            <button type="button" class="amen-tog" data-val="WiFi">WiFi</button>
+            <button type="button" class="amen-tog" data-val="Parking">Parking</button>
+            <button type="button" class="amen-tog" data-val="Security">Security</button>
+            <button type="button" class="amen-tog" data-val="Water 24hr">Water 24hr</button>
+            <button type="button" class="amen-tog" data-val="Furnished">Furnished</button>
+            <button type="button" class="amen-tog" data-val="CCTV">CCTV</button>
+          </div>
+        </div>
+        <div class="ferr" id="selfListErr"></div>
+        <button class="btn-w btn-teal" style="width:100%;margin-top:10px" type="submit">Publish (pending review)</button>
+        <div class="fhint" id="slPhotoHint" style="text-align:center;margin-top:8px">You can add photos after the listing is created.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="propOvl" data-modal>
+  <div class="mdl mdl-lg">
+    <div class="mdl-head"><h3 id="propTitle">Property</h3><button class="mdl-x" data-action="closeModal" data-modal="propOvl">✕</button></div>
+    <div class="mdl-body" id="propBody">Loading…</div>
+  </div>
+</div>
+
+<div class="stk-ovl" id="stkOvl">
+  <div class="stk-box">
+    <span class="stk-icon">📱</span>
+    <h3>M-Pesa Payment</h3>
+    <p>Enter the Safaricom number to receive the STK push prompt on.</p>
+    <input class="stk-in" id="stkPhone" placeholder="07XXXXXXXX" inputmode="numeric">
+    <div class="stk-det">
+      <div class="stk-row"><span class="stk-l">Property</span><span class="stk-v" id="stkPropTitle">—</span></div>
+      <div class="stk-row"><span class="stk-l">Amount</span><span class="stk-v" id="stkAmount">—</span></div>
+    </div>
+    <div class="stk-status" id="stkStatus"></div>
+    <button class="mp-btn" id="stkSendBtn" data-action="sendStk"><span class="mp-tag">M-PESA</span> Send STK Push</button>
+    <button class="stk-cancel" data-action="closeStk">Cancel</button>
+  </div>
+</div>
+
+<div class="ovl" id="reviewsOvl" data-modal>
+  <div class="mdl mdl-md">
+    <div class="mdl-head"><h3 id="reviewsTitle">Reviews</h3><button class="mdl-x" data-action="closeModal" data-modal="reviewsOvl">✕</button></div>
+    <div class="mdl-body">
+      <div id="reviewFormWrap">
+        <div class="fg"><label class="fl">Your Rating</label>
+          <div class="stars-row" id="starsRow">
+            <button type="button" class="sstar" data-star="1">★</button><button type="button" class="sstar" data-star="2">★</button>
+            <button type="button" class="sstar" data-star="3">★</button><button type="button" class="sstar" data-star="4">★</button>
+            <button type="button" class="sstar" data-star="5">★</button>
+          </div>
+        </div>
+        <div class="fg"><textarea class="fta" id="reviewText" placeholder="Share your experience..."></textarea></div>
+        <div class="ferr" id="reviewErr"></div>
+        <button class="btn-w btn-teal" style="width:100%" data-action="submitReview">Submit Review</button>
+      </div>
+      <div id="reviewsList" style="margin-top:16px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="referralOvl" data-modal>
+  <div class="mdl mdl-sm">
+    <div class="mdl-head"><h3>🎁 Refer &amp; Earn</h3><button class="mdl-x" data-action="closeModal" data-modal="referralOvl">✕</button></div>
+    <div class="mdl-body">
+      <p style="font-size:13px;color:var(--mid);line-height:1.7;margin-bottom:13px">Share your code. When a friend you refer completes their first paid unlock, you earn a reward — automatically, once their payment is confirmed.</p>
+      <div class="ref-code-box"><div class="ref-code" id="refCode">—</div><button class="btn-sm btn-outline" data-action="copyRefCode">Copy</button></div>
+      <div class="ref-stats">
+        <div class="ref-stat rs1"><div class="ref-stat-val" id="refCount">0</div><div class="ref-stat-lbl">Referrals</div></div>
+        <div class="ref-stat rs2"><div class="ref-stat-val" id="refPending">KES 0</div><div class="ref-stat-lbl">Pending</div></div>
+        <div class="ref-stat rs3"><div class="ref-stat-val" id="refEarned">KES 0</div><div class="ref-stat-lbl">Earned</div></div>
+      </div>
+      <div class="fhint" id="refLoginHint">Log in to see your referral code.</div>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="contactOvl" data-modal>
+  <div class="mdl mdl-sm">
+    <div class="mdl-head"><h3>Contact Us</h3><button class="mdl-x" data-action="closeModal" data-modal="contactOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="contactForm">
+        <div class="fg"><label class="fl">Name</label><input class="fi" name="name" required></div>
+        <div class="fg"><label class="fl">Email or Phone</label><input class="fi" name="contact" required></div>
+        <div class="fg"><label class="fl">Subject</label><input class="fi" name="subject" required></div>
+        <div class="fg"><label class="fl">Message</label><textarea class="fta" name="message" required></textarea></div>
+        <button class="btn-w btn-teal" style="width:100%" type="submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="aboutOvl" data-modal>
+  <div class="mdl mdl-md">
+    <div class="mdl-head"><h3>About LiveHere Homes</h3><button class="mdl-x" data-action="closeModal" data-modal="aboutOvl">✕</button></div>
+    <div class="mdl-body">
+      <p style="font-size:13px;color:var(--mid);line-height:1.8">LiveHere Homes helps you find verified rental homes across Kenya without the fake listings and ghost agents. Browse for free — pay a small one-off viewing fee only when you're ready to see a property's exact address and contact the landlord directly. Landlords list for free and only pay a platform fee on collected rent.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Landlord modals -->
+<div class="ovl" id="addTenantOvl" data-modal>
+  <div class="mdl mdl-sm">
+    <div class="mdl-head"><h3>Add Tenant</h3><button class="mdl-x" data-action="closeModal" data-modal="addTenantOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="addTenantForm">
+        <div class="fg"><label class="fl">Property</label><select class="fsel" name="propertyId" id="tenantPropertySelect"></select></div>
+        <div class="fg"><label class="fl">Tenant Name</label><input class="fi" name="tenantName" required></div>
+        <div class="fg"><label class="fl">Tenant Phone</label><input class="fi" name="tenantPhone" required></div>
+        <div class="fg"><label class="fl">Rent (KES)</label><input class="fi" name="rentAmount" type="number" required></div>
+        <button class="btn-w btn-teal" style="width:100%" type="submit">Add Tenant</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="maintOvl" data-modal>
+  <div class="mdl mdl-sm">
+    <div class="mdl-head"><h3>New Maintenance Request</h3><button class="mdl-x" data-action="closeModal" data-modal="maintOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="maintForm">
+        <div class="fg"><label class="fl">Property</label><select class="fsel" name="propertyId" id="maintPropertySelect"></select></div>
+        <div class="fg"><label class="fl">Unit label (optional)</label><input class="fi" name="unitLabel"></div>
+        <div class="fg"><label class="fl">Issue</label><textarea class="fta" name="issue" required></textarea></div>
+        <div class="fg"><label class="fl">Priority</label><select class="fsel" name="priority"><option value="LOW">Low</option><option value="MEDIUM" selected>Medium</option><option value="HIGH">High</option></select></div>
+        <button class="btn-w btn-teal" style="width:100%" type="submit">Submit Request</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="noticeOvl" data-modal>
+  <div class="mdl mdl-sm">
+    <div class="mdl-head"><h3>Send Notice</h3><button class="mdl-x" data-action="closeModal" data-modal="noticeOvl">✕</button></div>
+    <div class="mdl-body">
+      <form id="noticeForm">
+        <div class="fg"><label class="fl">Recipient</label><input class="fi" name="recipient" required placeholder="e.g. All Tenants or a name"></div>
+        <div class="fg"><label class="fl">Subject</label><input class="fi" name="subject" required></div>
+        <div class="fg"><label class="fl">Message</label><textarea class="fta" name="message" required></textarea></div>
+        <button class="btn-w btn-teal" style="width:100%" type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

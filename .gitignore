@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Build output
+dist/
+build/
+coverage/
+
+# Uploads (user content, never commit)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Prisma local dev db
+backend/prisma/dev.db
