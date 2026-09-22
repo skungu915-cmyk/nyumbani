@@ -127,20 +127,24 @@ useful for quickly showing the app running without provisioning your own server,
 couple of features (see limitations below).
 
 **How it's wired up** (see `netlify.toml`, `netlify/functions/api.js`,
-`netlify/database/migrations/`):
+`backend/src/routes/bootstrap.routes.js`):
 - The existing Express app runs unchanged inside a single Netlify Function
-  (`serverless-http`) — `/api/*` and `/media/*` are redirected to it, and `frontend/` is published
-  as the static site on the same origin, so there's no separate CORS setup to manage.
-- The database is a Netlify DB (Neon-backed Postgres), auto-provisioned because `@netlify/database`
-  is a dependency. The function reads its connection string via `getConnectionString()` at cold
-  start and hands it to Prisma as `DATABASE_URL` — no connection string is ever stored as a plain
-  environment variable.
-- Schema + demo data are applied via Netlify's own native SQL migration runner
-  (`netlify/database/migrations/<timestamp>_<slug>/migration.sql`), which Netlify runs
-  automatically before every deploy is published. This mirrors `backend/prisma/migrations/` (the
-  source of truth for local/production Postgres) plus a hand-written seed migration equivalent to
-  running `SEED_DEMO_DATA=true node prisma/seed.js` — since this deployment has no shared
-  filesystem to actually run that script against.
+  (`serverless-http`) — `/api/*`, `/media/*` and `/health` are redirected to it, and `frontend/` is
+  published as the static site on the same origin, so there's no separate CORS setup to manage.
+- The database is a plain external PostgreSQL instance, set as a normal `DATABASE_URL` env var —
+  same as the primary deployment path. (Netlify's own "Netlify DB" auto-provisioning integration
+  was tried first here and turned out to be deprecated — its extension page states new database
+  creation is no longer available through it — so the live demo's database is instead a small
+  Postgres instance on Railway, reachable from Netlify's function but not from whoever's deploying
+  it, which is exactly why the next point exists.)
+- Since this deployment's operator has no direct network path to that database, schema + demo data
+  aren't applied with `prisma migrate deploy` — instead, a one-time, secret-protected route
+  (`POST /api/_bootstrap/migrate`, guarded by a `BOOTSTRAP_SECRET` env var and only mounted when
+  that var is set) reads `backend/prisma/migrations/20260921193359_init/migration.sql` and
+  `backend/prisma/seed-demo.sql` and applies them statement-by-statement via Prisma from inside the
+  running function, which — unlike its operator — does have a normal network path to the database.
+  Call it once after the database exists and before using the app; it's idempotent (safe to call
+  again) and the response reports how many statements succeeded/failed.
 
 **Demo accounts** (same three roles as the local `SEED_DEMO_DATA=true` seed):
 

@@ -52,6 +52,11 @@ const schema = z.object({
   MAX_PHOTO_MB: z.coerce.number().positive().default(5),
   MAX_PHOTOS_PER_PROPERTY: z.coerce.number().int().positive().default(10),
   MAX_VIDEO_MB: z.coerce.number().positive().default(50),
+
+  // Only used by the optional Netlify deployment's one-time DB bootstrap route (see
+  // backend/src/routes/bootstrap.routes.js) — leave unset for the primary Node/Express deployment,
+  // which uses `prisma migrate deploy` directly and never mounts that route at all.
+  BOOTSTRAP_SECRET: z.string().optional().default(''),
 });
 
 const parsed = schema.safeParse(process.env);

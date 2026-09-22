@@ -98,6 +98,12 @@ app.use('/api/landlord', landlordRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/public', publicRoutes);
 
+// Only mounted when BOOTSTRAP_SECRET is configured — see backend/src/routes/bootstrap.routes.js.
+// The primary Node/Express deployment never sets that var, so this route doesn't exist there.
+if (env.BOOTSTRAP_SECRET) {
+  app.use('/api/_bootstrap', require('./routes/bootstrap.routes'));
+}
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 

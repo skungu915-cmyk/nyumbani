@@ -1,7 +1,8 @@
--- Seeds the Netlify DB demo deployment with an admin account, platform settings, a demo landlord,
--- a demo tenant, and three demo properties (matching backend/prisma/seed.js's SEED_DEMO_DATA=true
--- output) — since this deployment has no shared filesystem to run that script's own node process
--- against, this reaches the same end state via Netlify's native SQL migration runner instead.
+-- Seeds a serverless demo deployment (e.g. the Netlify one) with an admin account, platform
+-- settings, a demo landlord, a demo tenant, and three demo properties — matching
+-- backend/prisma/seed.js's SEED_DEMO_DATA=true output. Applied via the one-time
+-- /api/_bootstrap/migrate route (backend/src/routes/bootstrap.routes.js), since that kind of
+-- deployment has no shared filesystem/network path for its operator to run seed.js directly.
 -- Passwords below are pre-computed bcrypt hashes (cost 12) of the documented demo passwords —
 -- see README.md "Netlify demo deployment" for the actual credentials.
 -- Idempotent: every insert is ON CONFLICT DO NOTHING, safe to apply more than once.

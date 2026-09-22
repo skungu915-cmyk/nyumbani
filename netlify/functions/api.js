@@ -2,6 +2,11 @@
 // Lambda-compatible handler format, via serverless-http. This lets the whole backend — routes,
 // middleware, services — run on Netlify without being rewritten as many small functions.
 //
+// The database is a plain external PostgreSQL instance (DATABASE_URL set as a normal env var),
+// same as the primary Node/Express deployment path — NOT Netlify's own "Netlify DB" integration,
+// which turned out to be deprecated (its extension page states new database creation is no longer
+// available through it) after this deployment initially tried to rely on it.
+//
 // KNOWN LIMITATION: Netlify Functions have an ephemeral filesystem, so
 // backend/src/services/upload.service.js's disk-backed photo storage does not persist between
 // invocations here. Everything else behaves the same as the plain Node/Express deployment.
@@ -13,22 +18,10 @@
 let loadError = null;
 let handler = null;
 
-function loadApp() {
-  // Netlify DB (Neon-backed Postgres) doesn't expose its connection string as a regular listable
-  // env var — it's handed out via this SDK call, scoped to the current deploy context/branch.
-  // Prisma reads DATABASE_URL from process.env at client-construction time, so this MUST run
-  // before requiring backend/src/app (which transitively constructs the Prisma client).
-  if (!process.env.DATABASE_URL) {
-    const { getConnectionString } = require('@netlify/database');
-    process.env.DATABASE_URL = getConnectionString();
-  }
+try {
   const serverlessHttp = require('serverless-http');
   const app = require('../../backend/src/app');
-  return serverlessHttp(app);
-}
-
-try {
-  handler = loadApp();
+  handler = serverlessHttp(app);
 } catch (err) {
   loadError = err;
   // eslint-disable-next-line no-console
