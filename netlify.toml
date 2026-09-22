@@ -18,10 +18,19 @@
 
 [functions]
   node_bundler = "esbuild"
+  # Prisma's query engine ships as a native binary that esbuild (a JS-only bundler) doesn't follow
+  # through the generated client's dynamic require() of it — without this, the file never makes it
+  # into the deployed function package and every database query fails at runtime. sharp is loaded
+  # lazily in code specifically so it does NOT need to be in this list; if its binary has the same
+  # problem, only photo processing breaks instead of the whole app.
+  included_files = [
+    "backend/node_modules/.prisma/client/*.node",
+    "backend/node_modules/.prisma/client/schema.prisma"
+  ]
 
-# Send every /api/* request to the single Express app wrapped as one Netlify Function, so all
-# existing Express routes/middleware/services work unchanged instead of being rewritten as many
-# small functions.
+# Send every /api/* and /health request to the single Express app wrapped as one Netlify Function,
+# so all existing Express routes/middleware/services work unchanged instead of being rewritten as
+# many small functions.
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
@@ -30,4 +39,9 @@
 [[redirects]]
   from = "/media/*"
   to = "/.netlify/functions/api/media/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api/health"
   status = 200

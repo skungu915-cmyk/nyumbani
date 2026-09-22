@@ -2,9 +2,20 @@ const path = require('path');
 const fs = require('fs/promises');
 const crypto = require('crypto');
 const multer = require('multer');
-const sharp = require('sharp');
 const env = require('../config/env');
 const { badRequest } = require('../utils/http-errors');
+
+// `sharp` ships a platform-specific native binary. It's loaded lazily (only when a photo is
+// actually being processed) rather than at module top-level, so that a bundling problem with it
+// in a given deployment environment (e.g. a serverless bundler that doesn't package native
+// binaries correctly) only breaks photo processing, not every route in the app — every other
+// module in the require chain that loads upload.service.js (which is most of the app, via
+// properties.routes.js) would otherwise fail to load at all.
+let sharpModule;
+function loadSharp() {
+  if (!sharpModule) sharpModule = require('sharp');
+  return sharpModule;
+}
 
 const UPLOAD_ROOT = path.join(__dirname, '..', '..', env.UPLOAD_DIR);
 const PROPERTIES_DIR = path.join(UPLOAD_ROOT, 'properties');
@@ -62,6 +73,7 @@ async function processPhoto(buffer) {
 
   const filename = randomName('jpg');
   const outPath = path.join(PROPERTIES_DIR, filename);
+  const sharp = loadSharp();
   await sharp(buffer)
     .rotate() // apply EXIF orientation before stripping EXIF
     .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
