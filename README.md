@@ -163,10 +163,12 @@ doesn't have these):
   clicking "Pay & Unlock" fails with a clean error, same as any deployment that hasn't configured
   M-Pesa yet.
 - If you fork/redeploy this to your own Netlify site, set the same env vars documented in
-  `backend/.env.example` (`JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `NODE_ENV=production`,
-  `COOKIE_SECURE=true`, `FRONTEND_ORIGINS`/`BACKEND_PUBLIC_URL` set to your site's URL,
-  `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PHONE`/`SEED_ADMIN_PASSWORD`) via Site settings → Environment
-  variables — `DATABASE_URL` is the one exception, handled automatically as described above.
+  `backend/.env.example` (`JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` — both required, 32+ random
+  bytes each, e.g. `openssl rand -base64 48`; the app refuses to boot without them — plus
+  `NODE_ENV=production`, `COOKIE_SECURE=true`, `FRONTEND_ORIGINS`/`BACKEND_PUBLIC_URL` set to your
+  site's URL, `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PHONE`/`SEED_ADMIN_PASSWORD`) via Site settings →
+  Environment variables, plus your own Postgres `DATABASE_URL` and a `BOOTSTRAP_SECRET` as
+  described above.
 
 ## Deployment notes
 
